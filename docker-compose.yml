@@ -1,0 +1,39 @@
+version: "3"
+services:
+  consumer:
+    build:
+      context: ./
+      dockerfile: apps/consumer/Dockerfile
+    image: consumer
+    container_name: c-consumer
+    ports:
+      - "${PORT_CONSUMER}:${PORT_CONSUMER}"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - rabbitmq
+
+  producer:
+    build:
+      context: ./
+      dockerfile: apps/producer/Dockerfile
+    image: producer
+    container_name: c-producer
+    ports:
+      - "${PORT_PRODUCER}:${PORT_PRODUCER}"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    build:
+      context: ./apps/rabbit
+    image: rabbitmq
+    container_name: c-rmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - "${PWD}/apps/rabbit/data/:/var/lib/rabbitmq/"
+      - "${PWD}/apps/rabbit/log/:/var/log/rabbitmq"
